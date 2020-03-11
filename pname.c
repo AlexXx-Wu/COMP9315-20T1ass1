@@ -90,7 +90,7 @@ pname_recv(PG_FUNCTION_ARGS)
 	StringInfo	buf = (StringInfo) PG_GETARG_POINTER(0);
     PersonName    *result;
 
-    char * person_name = pq_getmsgstring(buf);
+    const char * person_name = pq_getmsgstring(buf);
     int length = strlen(person_name) + 1;
 
     result = (PersonName *) palloc(VARHDRSZ + length);
@@ -253,6 +253,7 @@ given(PG_FUNCTION_ARGS)
 {
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     char * a_given_name;
+    char result;
     a_given_name = strchr(a->pname, ',') + 1;
     if (*(a_given_name) == ' '){
         a_given_name++;
