@@ -67,7 +67,7 @@ pname_in(PG_FUNCTION_ARGS)
 PG_FUNCTION_INFO_V1(pname_out);
 
 Datum
-complex_out(PG_FUNCTION_ARGS)
+pname_out(PG_FUNCTION_ARGS)
 {
     PersonName    *PersonName = (PersonName *) PG_GETARG_POINTER(0);
 	char	   *result;
@@ -90,7 +90,8 @@ pname_recv(PG_FUNCTION_ARGS)
 	StringInfo	buf = (StringInfo) PG_GETARG_POINTER(0);
     PersonName    *result;
 
-    char * person_name = pg_getmsgstring(buf)
+    char * person_name = pq_getmsgstring(buf);
+    int length = strlen(person_name) + 1;
 
     result = (PersonName *) palloc(VARHDRSZ + length);
     SET_VARSIZE(result, VARHDRSZ + length);
