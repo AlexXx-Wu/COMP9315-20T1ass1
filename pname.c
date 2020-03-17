@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "postgres.h"
 #include <stdbool.h>
-#include <sting.h>
+#include <string.h>
 #include <regex.h>
 #include "fmgr.h"
 #include "libpq/pqformat.h"		/* needed for send/recv functions */
