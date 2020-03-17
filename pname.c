@@ -12,18 +12,30 @@
 #include <stdio.h>
 #include "postgres.h"
 #include <stdbool.h>
+#include <sting.h>
+#include <regex.h>
 #include "fmgr.h"
 #include "libpq/pqformat.h"		/* needed for send/recv functions */
 #include "access/hash.h"
 #include "utils/builtins.h"
 
-using System;
-using System.Text.RegularExpressions;
 PG_MODULE_MAGIC;
 
-public static bool check_input(string str)
-{
-return Regex.IsMatch(str, "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$");
+static int check_input(const char *match_string){
+    const char *pattern = "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$"
+    bool result = 0;
+    regex_t regex;
+    int regexInit;
+    regexInit = regcomp(&regex, pattern, REG_EXTENDED);
+    if (regexInit == 0){
+        int match_result = regexec(&regex, match_string, 0, NULL, 0);
+        if(match_result == 0){
+            result = 1;
+        }
+    }
+    regfree(&regex);
+    return result;
+            //return Regex.IsMatch(str, "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$");
 }
 
 
@@ -81,10 +93,10 @@ PG_FUNCTION_INFO_V1(pname_out);
 Datum
 pname_out(PG_FUNCTION_ARGS)
 {
-    PersonName    *PersonName = (PersonName *) PG_GETARG_POINTER(0);
+    PersonName    *personName = (PersonName *) PG_GETARG_POINTER(0);
     char	   *result;
 
-    result = psprintf("(%s)", PersonName->pname);
+    result = psprintf("(%s)", personName->pname);
     PG_RETURN_CSTRING(result);
 }
 
@@ -161,14 +173,14 @@ int pname_compare(PersonName *a, PersonName *b){
     b->pname[b_comma] = ',';
     if (result == 0){
         if (a->pname[a_comma + 1] == ' '){
-            a_given_name++
+            a_given_name++;
         }
         if (b->pname[a_comma + 1] == ' '){
-            b_given_name++
+            b_given_name++;
         }
         result = strcmp(a_given_name, b_given_name);
     }
-    return reslut;
+    return result;
 }
 
 PG_FUNCTION_INFO_V1(pname_lt);
@@ -318,5 +330,5 @@ show(PG_FUNCTION_ARGS){
         result2 = psprintf('%s', a_given_name);
         a_given_name[given_space] = '';
 
-        PG_RETURN_text(cstring_to_text(result + "" + result2))
+        PG_RETURN_text(cstring_to_text(result + "" + result2));
 }
