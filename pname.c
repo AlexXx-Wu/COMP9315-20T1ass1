@@ -22,7 +22,7 @@
 PG_MODULE_MAGIC;
 
 static int check_input(const char *match_string){
-    const char *pattern = "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$"；
+    const char *pattern = "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$";
     bool result = 0;
     regex_t regex;
     int regexInit;
@@ -293,13 +293,13 @@ PG_FUNCTION_INFO_V1(pname_hash);
 Datum
 pname_hash(PG_FUNCTION_ARGS)
 {
-    PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
+    /***PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     char * a_given_name;
     char result;
     a_given_name = strchr(a->pname, ',') + 1;
     if (*(a_given_name) == ' '){
         a_given_name++;
-    }
+    }***/
     // hash any
     int hash_code = DatumGetUInt32(hash_any(unsigned char *) a->pname, strlen(a->pname));
     PG_RETURN_INT32(hash_code);
