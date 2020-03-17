@@ -9,18 +9,28 @@
 //check
 //去空格
 //show
-
+#include <stdio.h>
 #include "postgres.h"
-
+#include <stdbool.h>
 #include "fmgr.h"
 #include "libpq/pqformat.h"		/* needed for send/recv functions */
 #include "access/hash.h"
+#include "utils/builtins.h"
 
+using System;
+using System.Text.RegularExpressions;
 PG_MODULE_MAGIC;
+
+public static bool check_input(string str)
+{
+return Regex.IsMatch(str, "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$");
+}
+
+
 
 typedef struct Person
 {
-	int length;
+    int length;
     //variable
     char pname[1];
 }PersonName;
@@ -31,37 +41,39 @@ int person_name_cmp(PersonName *a, PersonName *b);
  * Input/Output functions
  *****************************************************************************/
 
+
 PG_FUNCTION_INFO_V1(pname_in);
 
 Datum
 pname_in(PG_FUNCTION_ARGS)
 {
-	// insert into students (name) values("Smith,John")
+    // insert into students (name) values("Smith,John")
     char	   *str = PG_GETARG_CSTRING(0);
 
-	if (strlen(str) < 2)
-		ereport(ERROR,
-				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
-				 errmsg("invalid input syntax for type %s: \"%s\"",
-						"pname", str)));
-	if (check_input(str) == false){
+
+    if (strlen(str) < 2)
         ereport(ERROR,
                 (errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
                         errmsg("invalid input syntax for type %s: \"%s\"",
                                "pname", str)));
-	}
-	//还需添加
+    if (check_input(str) == false){
+        ereport(ERROR,
+                (errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+                        errmsg("invalid input syntax for type %s: \"%s\"",
+                               "pname", str)));
+    }
+    //还需添加
     //check ,Aa 正则表达式
     //首字母必须大写
     //(^[A~Z](a~z)+(([ -])?([A~Z](a~z)+
     PersonName    *result;
-	int length = strlen(str) + 1;
+    int length = strlen(str) + 1;
 
-	result = (PersonName *) palloc(VARHDRSZ + length);
-	SET_VARSIZE(result, VARHDRSZ + length);
-	//赋值result
-	snprintf(result->pname, length, "%s", str);
-	PG_RETURN_POINTER(result);
+    result = (PersonName *) palloc(VARHDRSZ + length);
+    SET_VARSIZE(result, VARHDRSZ + length);
+    //赋值result
+    snprintf(result->pname, length, "%s", str);
+    PG_RETURN_POINTER(result);
 }
 
 PG_FUNCTION_INFO_V1(pname_out);
@@ -70,10 +82,10 @@ Datum
 pname_out(PG_FUNCTION_ARGS)
 {
     PersonName    *PersonName = (PersonName *) PG_GETARG_POINTER(0);
-	char	   *result;
+    char	   *result;
 
-	result = psprintf("(%s)", PersonName->pname);
-	PG_RETURN_CSTRING(result);
+    result = psprintf("(%s)", PersonName->pname);
+    PG_RETURN_CSTRING(result);
 }
 
 /*****************************************************************************
@@ -82,12 +94,12 @@ pname_out(PG_FUNCTION_ARGS)
  * These are optional.
  *****************************************************************************/
 
-PG_FUNCTION_INFO_V1(complex_recv);
+PG_FUNCTION_INFO_V1(pname_recv);
 
 Datum
 pname_recv(PG_FUNCTION_ARGS)
 {
-	StringInfo	buf = (StringInfo) PG_GETARG_POINTER(0);
+    StringInfo	buf = (StringInfo) PG_GETARG_POINTER(0);
     PersonName    *result;
 
     const char * person_name = pq_getmsgstring(buf);
@@ -112,10 +124,10 @@ Datum
 pname_send(PG_FUNCTION_ARGS)
 {
     PersonName    *personName = (PersonName *) PG_GETARG_POINTER(0);
-	StringInfoData buf;
-	pq_begintypsend(&buf);
-	pq_sendstring(&buf, personName->pname);
-	PG_RETURN_BYTEA_P(pq_endtypsend(&buf));
+    StringInfoData buf;
+    pq_begintypsend(&buf);
+    pq_sendstring(&buf, personName->pname);
+    PG_RETURN_BYTEA_P(pq_endtypsend(&buf));
 }
 
 /*****************************************************************************
@@ -124,7 +136,7 @@ pname_send(PG_FUNCTION_ARGS)
  * A practical Complex datatype would provide much more than this, of course.
  *****************************************************************************/
 
-int person_name_cmp(PersonName *a, PersonName *b){
+int pname_compare(PersonName *a, PersonName *b){
     int a_comma = 0, b_comma = 0;
     for (int i = 0; i < strlen(a->pname); i++){
         if (a->pname[i] == ','){
@@ -167,7 +179,7 @@ pname_lt(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_cmp(a, b) < 0);
+    PG_RETURN_BOOL(person_name_cmp(a, b) < 0);
 }
 
 PG_FUNCTION_INFO_V1(pname_le);
@@ -178,7 +190,7 @@ pname_le(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_cmp(a, b) <= 0);
+    PG_RETURN_BOOL(person_name_cmp(a, b) <= 0);
 }
 
 PG_FUNCTION_INFO_V1(pname_equal);
@@ -189,7 +201,7 @@ pname_equal(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_cmp(a, b) == 0);
+    PG_RETURN_BOOL(person_name_cmp(a, b) == 0);
 }
 
 PG_FUNCTION_INFO_V1(pname_ge);
@@ -200,7 +212,7 @@ pname_ge(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_cmp(a, b) >= 0);
+    PG_RETURN_BOOL(person_name_cmp(a, b) >= 0);
 }
 
 PG_FUNCTION_INFO_V1(pname_gt);
@@ -211,7 +223,7 @@ pname_gt(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_cmp(a, b) > 0);
+    PG_RETURN_BOOL(person_name_cmp(a, b) > 0);
 }
 /***
 PG_FUNCTION_INFO_V1(complex_abs_cmp);
@@ -243,7 +255,7 @@ family(PG_FUNCTION_ARGS)
     a->pname[a_family] = '\0';
     result = psprintf("%s", a->pname);
     a->pname[a_family] = ',';
-    PG_RETURN_CSTRING(result);
+    PG_RETURN_text(result);
 }
 
 PG_FUNCTION_INFO_V1(given);
@@ -260,7 +272,7 @@ given(PG_FUNCTION_ARGS)
     }
     result = psprintf('%s', a_given_name);
 
-    PG_RETURN_CSTRING(result);
+    PG_RETURN_text(result);
 }
 
 PG_FUNCTION_INFO_V1(pname_hash);
@@ -269,9 +281,42 @@ Datum
 pname_hash(PG_FUNCTION_ARGS)
 {
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
-    //去空格
+    char * a_given_name;
+    char result;
+    a_given_name = strchr(a->pname, ',') + 1;
+    if (*(a_given_name) == ' '){
+        a_given_name++;
+    }
     // hash any
     int hash_code = 0;
     hash_code = DatumGetUInt32(hash_any(unsigned char *) a->pname, strlen(a->pname));
     PG_RETURN_INT32(hash_code);
+}
+
+show(PG_FUNCTION_ARGS){
+        PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
+        int a_family = 0;
+        char result;
+        for (int i = 0; i < strlen(a->pname); i++){
+            if (a->pname[i] == ','){
+                a_family = i;
+                break;
+            }
+        }
+        a->pname[a_family] = '\0';
+        result = psprintf("%s", a->pname);
+        a->pname[a_family] = ',';
+        char * a_given_name;
+        char result2;
+        a_given_name = strchr(a->pname, ',') + 1;
+        if (*(a_given_name) == ''){
+            a_given_name++;
+        }
+
+        int given_space = strchr(a_given_name , '');
+        a_given_name[given_space] = '\0';
+        result2 = psprintf('%s', a_given_name);
+        a_given_name[given_space] = '';
+
+        PG_RETURN_text(cstring_to_text(result + "" + result2))
 }
