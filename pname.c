@@ -293,8 +293,8 @@ PG_FUNCTION_INFO_V1(pname_hash);
 Datum
 pname_hash(PG_FUNCTION_ARGS)
 {
-    /***PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
-    char * a_given_name;
+    PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
+    /***char * a_given_name;
     char result;
     a_given_name = strchr(a->pname, ',') + 1;
     if (*(a_given_name) == ' '){
