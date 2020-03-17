@@ -301,7 +301,7 @@ pname_hash(PG_FUNCTION_ARGS)
         a_given_name++;
     }***/
     // hash any
-    int hash_code = DatumGetUInt32(hash_any(unsigned char *) a->pname, strlen(a->pname));
+    int hash_code = DatumGetUInt32(hash_any((const unsigned char *) a->pname, strlen(a->pname)));;
     PG_RETURN_INT32(hash_code);
 }
 PG_FUNCTION_INFO_V1(show);
