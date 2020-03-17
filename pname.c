@@ -22,7 +22,7 @@
 PG_MODULE_MAGIC;
 
 static int check_input(const char *match_string){
-    const char *pattern = "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$"
+    const char *pattern = "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$"；
     bool result = 0;
     regex_t regex;
     int regexInit;
@@ -161,8 +161,9 @@ int pname_compare(PersonName *a, PersonName *b){
      * char * a_given_name = strchr(a->pname, ',');
      * a_comma = strlen(a->pname) - strlen(a_given_name);
      */
-    char * a_given_name = strchr(a->pname, ',')
+    char * a_given_name = strchr(a->pname, ',');
     char * b_given_name = strchr(b->pname, ',');
+    int result;
     b_comma = strlen(b->pname) - strlen(b_given_name);
 
     a->pname[a_comma] = '\0';
@@ -300,11 +301,12 @@ pname_hash(PG_FUNCTION_ARGS)
         a_given_name++;
     }
     // hash any
-    int hash_code = 0;
-    hash_code = DatumGetUInt32(hash_any(unsigned char *) a->pname, strlen(a->pname));
+    int hash_code = DatumGetUInt32(hash_any(unsigned char *) a->pname, strlen(a->pname));
     PG_RETURN_INT32(hash_code);
 }
+PG_FUNCTION_INFO_V1(show);
 
+Datum
 show(PG_FUNCTION_ARGS){
         PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
         int a_family = 0;
@@ -321,14 +323,14 @@ show(PG_FUNCTION_ARGS){
         char * a_given_name;
         char result2;
         a_given_name = strchr(a->pname, ',') + 1;
-        if (*(a_given_name) == ''){
+        if (*(a_given_name) == ' '){
             a_given_name++;
         }
 
-        int given_space = strchr(a_given_name , '');
+        int given_space = strchr(a_given_name , ' ');
         a_given_name[given_space] = '\0';
         result2 = psprintf('%s', a_given_name);
-        a_given_name[given_space] = '';
+        a_given_name[given_space] = ' ';
 
-        PG_RETURN_text(cstring_to_text(result + "" + result2));
+        PG_RETURN_text(cstring_to_text(result + " " + result2));
 }
