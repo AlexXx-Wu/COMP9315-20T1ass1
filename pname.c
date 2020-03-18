@@ -190,7 +190,7 @@ Datum
 pname_compare(PG_FUNCTION_ARGS)
 {
     PersonName *a = (PersonName *) PG_GETARG_POINTER(0);
-    PersonName *b = (PersonName *) PG_GETARG_POINTER(0);
+    PersonName *b = (PersonName *) PG_GETARG_POINTER(1);
     PG_RETURN_INT32(pname_compare_internal(a, b));
 }
 
