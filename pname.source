@@ -157,7 +157,7 @@ CREATE FUNCTION pname_hash(PersonName) RETURNS int4
 CREATE FUNCTION show(PersonName) RETURNS text
    AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
--- now we can make the operator class
+-- now we can make the operator
 
 CREATE OPERATOR CLASS pname_btree_ops
     DEFAULT FOR TYPE PersonName USING btree AS
