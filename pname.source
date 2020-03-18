@@ -34,7 +34,7 @@
 -- does not exist yet but that's okay.
 
 --insert students (name) values("Smith,John")
-CREATE FUNCTION pname_in(PersonName)
+CREATE FUNCTION pname_in(cstring)
    RETURNS PersonName
    AS '_OBJWD_/pname'
    LANGUAGE C IMMUTABLE STRICT;
