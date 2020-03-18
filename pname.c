@@ -35,7 +35,7 @@ static int check_input(const char *match_string){
     }
     regfree(&regex);
     return result;
-            //return Regex.IsMatch(str, "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$");
+    //return Regex.IsMatch(str, "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$");
 }
 
 
@@ -62,23 +62,19 @@ pname_in(PG_FUNCTION_ARGS)
     // insert into students (name) values("Smith,John")
     char	   *str = PG_GETARG_CSTRING(0);
 
-    /***
+
     if (strlen(str) < 2)
         ereport(ERROR,
                 (errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
                         errmsg("invalid input syntax for type %s: \"%s\"",
                                "pname", str)));
-     ***/
     if (check_input(str) == false){
         ereport(ERROR,
                 (errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
                         errmsg("invalid input syntax for type %s: \"%s\"",
                                "pname", str)));
     }
-    //还需添加
-    //check ,Aa 正则表达式
-    //首字母必须大写
-    //(^[A~Z](a~z)+(([ -])?([A~Z](a~z)+
+
     PersonName    *result;
     int length = strlen(str) + 1;
 
@@ -154,16 +150,15 @@ int pname_compare_internal(PersonName *a, PersonName *b)
     int a_comma = 0, b_comma = 0;
     for (int i = 0; i < strlen(a->pname); i++){
         if (a->pname[i] == ','){
-            a_comma = i;
+
             break;
+
         }
     }
-    /***
-     * second
-     * char * a_given_name = strchr(a->pname, ',');
-     * a_comma = strlen(a->pname) - strlen(a_given_name);
-     */
+
+
     char * a_given_name = strchr(a->pname, ',');
+    a_comma = strlen(a->pname) - strlen(a_given_name);
     char * b_given_name = strchr(b->pname, ',');
     int result;
     b_comma = strlen(b->pname) - strlen(b_given_name);
@@ -178,7 +173,7 @@ int pname_compare_internal(PersonName *a, PersonName *b)
         if (a->pname[a_comma + 1] == ' '){
             a_given_name++;
         }
-        if (b->pname[a_comma + 1] == ' '){
+        if (b->pname[b_comma + 1] == ' '){
             b_given_name++;
         }
         result = strcmp(a_given_name, b_given_name);
@@ -281,7 +276,6 @@ family(PG_FUNCTION_ARGS)
 {
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     int a_family = 0;
-    char result;
     for (int i = 0; i < strlen(a->pname); i++){
         if (a->pname[i] == ','){
             a_family = i;
@@ -289,7 +283,8 @@ family(PG_FUNCTION_ARGS)
         }
     }
     a->pname[a_family] = '\0';
-    result = psprintf("%s", a->pname);
+    //result = psprintf("%s", a->pname);
+    text * result = cstring_to_text(a->pname);
     a->pname[a_family] = ',';
     PG_RETURN_TEXT_P(result);
 }
@@ -300,15 +295,14 @@ Datum
 given(PG_FUNCTION_ARGS)
 {
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
-    char * a_given_name;
-    char result;
+    char *a_given_name;
+
     a_given_name = strchr(a->pname, ',') + 1;
     if (*(a_given_name) == ' '){
         a_given_name++;
     }
-    result = psprintf('%s', a_given_name);
 
-    PG_RETURN_TEXT_P(result);
+    PG_RETURN_TEXT_P(cstring_to_text(a_given_name));
 }
 
 PG_FUNCTION_INFO_V1(pname_hash);
@@ -332,29 +326,33 @@ PG_FUNCTION_INFO_V1(show);
 
 Datum
 show(PG_FUNCTION_ARGS){
-        PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
-        int a_family = 0;
-        char result;
-        for (int i = 0; i < strlen(a->pname); i++){
-            if (a->pname[i] == ','){
-                a_family = i;
-                break;
-            }
-        }
-        a->pname[a_family] = '\0';
-        result = psprintf("%s", a->pname);
-        a->pname[a_family] = ',';
-        char * a_given_name;
-        char result2;
-        a_given_name = strchr(a->pname, ',') + 1;
-        if (*(a_given_name) == ' '){
-            a_given_name++;
-        }
+    PersonName *personName = (PersonName *) PG_GETARG_POINTER(0);
 
-        int given_space = strchr(a_given_name , ' ');
-        a_given_name[given_space] = '\0';
-        result2 = psprintf('%s', a_given_name);
-        a_given_name[given_space] = ' ';
+    // given name
+    char *given_name, *result, *given_name_other_part;
+    int family_name_length = 0, given_name_length = 0;
 
-        PG_RETURN_TEXT_P(cstring_to_text(result + " " + result2));
+    given_name = strchr(personName->pname, ',') + 1;
+    family_name_length = strlen(personName->pname) - strlen(given_name) - 1;
+    // 判断是否是有一个空格
+    if (*(given_name) == ' ') {
+        given_name++;
+    }
+
+    given_name_other_part = strchr(given_name, ' ');
+    personName->pname[family_name_length] = '\0';
+
+    // 获取要截取的长度
+    if (given_name_other_part == NULL) {
+        result = psprintf("%s %s", given_name, personName->pname);
+    } else {
+        given_name_length = strlen(given_name) - strlen(given_name_other_part);
+        given_name[given_name_length] = '\0';
+        result = psprintf("%s %s", given_name, personName->pname);
+        given_name[given_name_length] = ' ';
+    }
+
+    personName->pname[family_name_length] = ',';
+
+    PG_RETURN_TEXT_P(cstring_to_text(result));
 }
