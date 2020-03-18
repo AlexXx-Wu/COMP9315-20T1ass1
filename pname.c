@@ -147,8 +147,11 @@ pname_send(PG_FUNCTION_ARGS)
  *
  * A practical Complex datatype would provide much more than this, of course.
  *****************************************************************************/
+PG_FUNCTION_INFO_V1(pname_compare);
 
-int pname_compare(PersonName *a, PersonName *b){
+Datum
+pname_compare(PG_FUNCTION_ARGS)
+{
     int a_comma = 0, b_comma = 0;
     for (int i = 0; i < strlen(a->pname); i++){
         if (a->pname[i] == ','){
@@ -304,6 +307,7 @@ pname_hash(PG_FUNCTION_ARGS)
     int hash_code = DatumGetUInt32(hash_any((const unsigned char *) a->pname, strlen(a->pname)));;
     PG_RETURN_INT32(hash_code);
 }
+
 PG_FUNCTION_INFO_V1(show);
 
 Datum

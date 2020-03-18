@@ -34,7 +34,7 @@
 -- does not exist yet but that's okay.
 
 --insert students (name) values("Smith,John")
-CREATE FUNCTION pname_in(cstring)
+CREATE FUNCTION pname_in(PersonName)
    RETURNS PersonName
    AS '_OBJWD_/pname'
    LANGUAGE C IMMUTABLE STRICT;
@@ -42,7 +42,7 @@ CREATE FUNCTION pname_in(cstring)
 -- the output function 'pname_out' takes the internal representation and
 -- converts it into the textual representation.
 
-select name from students
+
 CREATE FUNCTION pname_out(PersonName)
    RETURNS cstring
    AS '_OBJWD_/pname'
@@ -59,7 +59,7 @@ CREATE FUNCTION pname_recv(internal)
 -- the binary output function 'pname_send' takes the internal representation
 -- and converts it into a (hopefully) platform-independent bytea string.
 
-CREATE FUNCTION pname_send(pname)
+CREATE FUNCTION pname_send(PersonName)
    RETURNS bytea
    AS '_OBJWD_/pname'
    LANGUAGE C IMMUTABLE STRICT;
@@ -92,8 +92,7 @@ CREATE TYPE PersonName (
 --	yet. We need to create all the required operators and support
 --      functions, then we can make the operator class.
 -----------------------------
-CREATE FUNCTION pname_equal(PersonName, PersonName) RETURNS bool
-   AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
+
 
 -- first, define the required operators
 CREATE FUNCTION pname_lt(PersonName, PersonName) RETURNS bool
