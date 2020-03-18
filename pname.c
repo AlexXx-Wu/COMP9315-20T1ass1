@@ -47,7 +47,7 @@ typedef struct Person
     char pname[1];
 }PersonName;
 
-int person_name_cmp(PersonName *a, PersonName *b);
+int pname_compare(PersonName *a, PersonName *b);
 
 /*****************************************************************************
  * Input/Output functions
@@ -192,7 +192,7 @@ pname_lt(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-    PG_RETURN_BOOL(person_name_cmp(a, b) < 0);
+    PG_RETURN_BOOL(pname_compare(a, b) < 0);
 }
 
 PG_FUNCTION_INFO_V1(pname_le);
@@ -203,7 +203,7 @@ pname_le(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-    PG_RETURN_BOOL(person_name_cmp(a, b) <= 0);
+    PG_RETURN_BOOL(pname_compare(a, b) <= 0);
 }
 
 PG_FUNCTION_INFO_V1(pname_equal);
@@ -214,7 +214,7 @@ pname_equal(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-    PG_RETURN_BOOL(person_name_cmp(a, b) == 0);
+    PG_RETURN_BOOL(pname_compare(a, b) == 0);
 }
 
 PG_FUNCTION_INFO_V1(pname_ge);
@@ -225,7 +225,7 @@ pname_ge(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-    PG_RETURN_BOOL(person_name_cmp(a, b) >= 0);
+    PG_RETURN_BOOL(pname_compare(a, b) >= 0);
 }
 
 PG_FUNCTION_INFO_V1(pname_gt);
@@ -236,7 +236,7 @@ pname_gt(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-    PG_RETURN_BOOL(person_name_cmp(a, b) > 0);
+    PG_RETURN_BOOL(pname_compare(a, b) > 0);
 }
 /***
 PG_FUNCTION_INFO_V1(complex_abs_cmp);
