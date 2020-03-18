@@ -21,15 +21,15 @@
 
 PG_MODULE_MAGIC;
 
-static int check_input(const char *match_string){
+static int check_input(const char *check_string){
     const char *pattern = "((^[A-Z])((['|-])|([A-Za-z]))+(([ ])?([A-Z])((['|-])|([A-Za-z]))+)*,([ ])?([A-Z])((['|-])|([A-Za-z]))+(([ ])?([A-Z])((['|-])|([A-Za-z]))+)*)$";
+    int Init_value;
     bool result = 0;
     regex_t regex;
-    int regexInit;
-    regexInit = regcomp(&regex, pattern, REG_EXTENDED);
-    if (regexInit == 0){
-        int match_result = regexec(&regex, match_string, 0, NULL, 0);
-        if(match_result == 0){
+    Init_value = regcomp(&regex, pattern, REG_EXTENDED);
+    if (Init_value == 0){
+        int check_result = regexec(&regex, check_string, 0, NULL, 0);
+        if(check_result == 0){
             result = 1;
         }
     }
@@ -329,30 +329,31 @@ show(PG_FUNCTION_ARGS){
     PersonName *personName = (PersonName *) PG_GETARG_POINTER(0);
 
     // given name
-    char *given_name, *result, *given_name_other_part;
-    int family_name_length = 0, given_name_length = 0;
+    int family_length = 0, given_length = 0;
+    char *given_name, *given_one_other_part;
+    char *result;
 
     given_name = strchr(personName->pname, ',') + 1;
-    family_name_length = strlen(personName->pname) - strlen(given_name) - 1;
-    // 判断是否是有一个空格
+    family_length = strlen(personName->pname) - strlen(given_name) - 1;
+    // check ' '
     if (*(given_name) == ' ') {
         given_name++;
     }
 
-    given_name_other_part = strchr(given_name, ' ');
-    personName->pname[family_name_length] = '\0';
+    personName->pname[family_length] = '\0';
+    given_one_other_part = strchr(given_name, ' ');
 
-    // 获取要截取的长度
-    if (given_name_other_part == NULL) {
+    // check given name's length
+    if (given_one_other_part != NULL) {
+        given_length = strlen(given_name) - strlen(given_name_other_part);
+        given_name[given_length] = '\0';
         result = psprintf("%s %s", given_name, personName->pname);
+        given_name[given_length] = ' ';
     } else {
-        given_name_length = strlen(given_name) - strlen(given_name_other_part);
-        given_name[given_name_length] = '\0';
         result = psprintf("%s %s", given_name, personName->pname);
-        given_name[given_name_length] = ' ';
     }
 
-    personName->pname[family_name_length] = ',';
+    personName->pname[family_length] = ',';
 
     PG_RETURN_TEXT_P(cstring_to_text(result));
 }
