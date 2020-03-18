@@ -22,7 +22,7 @@
 PG_MODULE_MAGIC;
 
 static int check_input(const char *match_string){
-    const char *pattern = "((^[A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*,([ ])?([A-Z])(([‘|-])|([A-Za-z]))+(([ ])?([A-Z])(([‘|-])|([A-Za-z]))+)*)$";
+    const char *pattern = "((^[A-Z])((['|-])|([A-Za-z]))+(([ ])?([A-Z])((['|-])|([A-Za-z]))+)*,([ ])?([A-Z])((['|-])|([A-Za-z]))+(([ ])?([A-Z])((['|-])|([A-Za-z]))+)*)$";
     bool result = 0;
     regex_t regex;
     int regexInit;
