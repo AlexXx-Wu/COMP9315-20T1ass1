@@ -147,10 +147,8 @@ pname_send(PG_FUNCTION_ARGS)
  *
  * A practical Complex datatype would provide much more than this, of course.
  *****************************************************************************/
-PG_FUNCTION_INFO_V1(pname_compare);
 
-Datum
-pname_compare(PG_FUNCTION_ARGS)
+int pname_compare(PersonName *a, PersonName *b)
 {
     int a_comma = 0, b_comma = 0;
     for (int i = 0; i < strlen(a->pname); i++){
