@@ -62,12 +62,13 @@ pname_in(PG_FUNCTION_ARGS)
     // insert into students (name) values("Smith,John")
     char	   *str = PG_GETARG_CSTRING(0);
 
-
+    /***
     if (strlen(str) < 2)
         ereport(ERROR,
                 (errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
                         errmsg("invalid input syntax for type %s: \"%s\"",
                                "pname", str)));
+     ***/
     if (check_input(str) == false){
         ereport(ERROR,
                 (errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
