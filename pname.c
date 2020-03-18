@@ -252,7 +252,7 @@ pname_gt(PG_FUNCTION_ARGS)
 PG_FUNCTION_INFO_V1(pname_ne);
 
 Datum
-pname_gt(PG_FUNCTION_ARGS)
+pname_ne(PG_FUNCTION_ARGS)
 {
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
