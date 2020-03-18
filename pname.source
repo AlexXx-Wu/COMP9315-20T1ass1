@@ -166,7 +166,6 @@ CREATE OPERATOR CLASS pname_btree_ops
         OPERATOR        3       = ,
         OPERATOR        4       >= ,
         OPERATOR        5       > ,
-        OPERATOR        6       <> ,
         FUNCTION        1       pname_compare(PersonName, PersonName);
 
 CREATE OPERATOR CLASS pname_hash_ops
