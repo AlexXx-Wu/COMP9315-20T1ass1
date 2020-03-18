@@ -248,7 +248,7 @@ pname_gt(PG_FUNCTION_ARGS)
 
     PG_RETURN_BOOL(pname_compare_internal(a, b) > 0);
 }
-/***
+
 PG_FUNCTION_INFO_V1(pname_ne);
 
 Datum
@@ -257,9 +257,8 @@ pname_ne(PG_FUNCTION_ARGS)
     PersonName    *a = (PersonName *) PG_GETARG_POINTER(0);
     PersonName    *b = (PersonName *) PG_GETARG_POINTER(1);
 
-    PG_RETURN_BOOL(pname_compare_internal(a, b) <> 0);
+    PG_RETURN_BOOL(pname_compare_internal(a, b) != 0);
 }
-***/
 
 /***
 PG_FUNCTION_INFO_V1(complex_abs_cmp);
