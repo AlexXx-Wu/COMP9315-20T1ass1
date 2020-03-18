@@ -105,6 +105,8 @@ CREATE FUNCTION pname_ge(PersonName, PersonName) RETURNS bool
    AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 CREATE FUNCTION pname_gt(PersonName, PersonName) RETURNS bool
    AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pname_ne(PersonName, PersonName) RETURNS bool
+   AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
 
 CREATE OPERATOR < (
