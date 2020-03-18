@@ -149,6 +149,9 @@ CREATE FUNCTION given(PersonName) RETURNS text
 CREATE FUNCTION pname_hash(PersonName) RETURNS int4
    AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
+CREATE FUNCTION show(PersonName) RETURNS text
+   AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
+
 -- now we can make the operator class
 
 CREATE OPERATOR CLASS pname_btree_ops
