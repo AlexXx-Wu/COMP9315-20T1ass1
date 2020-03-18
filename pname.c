@@ -345,7 +345,7 @@ show(PG_FUNCTION_ARGS){
 
     // check given name's length
     if (given_one_other_part != NULL) {
-        given_length = strlen(given_name) - strlen(given_name_other_part);
+        given_length = strlen(given_name) - strlen(given_one_other_part);
         given_name[given_length] = '\0';
         result = psprintf("%s %s", given_name, personName->pname);
         given_name[given_length] = ' ';
