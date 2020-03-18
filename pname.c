@@ -268,7 +268,7 @@ family(PG_FUNCTION_ARGS)
     a->pname[a_family] = '\0';
     result = psprintf("%s", a->pname);
     a->pname[a_family] = ',';
-    PG_RETURN_TEXT(result);
+    PG_RETURN_TEXT_P(result);
 }
 
 PG_FUNCTION_INFO_V1(given);
@@ -285,7 +285,7 @@ given(PG_FUNCTION_ARGS)
     }
     result = psprintf('%s', a_given_name);
 
-    PG_RETURN_TEXT(result);
+    PG_RETURN_TEXT_P(result);
 }
 
 PG_FUNCTION_INFO_V1(pname_hash);
@@ -332,5 +332,5 @@ show(PG_FUNCTION_ARGS){
         result2 = psprintf('%s', a_given_name);
         a_given_name[given_space] = ' ';
 
-        PG_RETURN_TEXT(cstring_to_text(result + " " + result2));
+        PG_RETURN_TEXT_P(cstring_to_text(result + " " + result2));
 }
